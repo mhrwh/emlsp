@@ -7,6 +7,7 @@ import {
     TextDocument,
 } from 'vscode-languageserver-textdocument';
 
+import { showMessage } from './server';
 import * as path from 'path';
 import * as fs from 'fs';
 import { URI } from 'vscode-uri';
@@ -57,6 +58,7 @@ export function returnABSDefinition(
 ): Promise<Definition>
 {
     if (mizfiles === undefined){
+        showMessage(1, 'error!');
         return new Promise((resolve, reject) => {
             reject(
                 new Error('You have to set environment variable "MIZFILES"')
@@ -73,7 +75,8 @@ export function returnABSDefinition(
         // 定義を参照するドキュメントから，定義箇所を指定して返す
         fs.readFile(fileName, "utf-8", (err, documentText) => {
             if (err){
-                reject(err);
+                showMessage(1, 'not found ' + fileName);
+                return reject(err);
             }
             const uri = URI.file(fileName).toString();  
             const document = TextDocument.create(uri, "Mizar", 1, documentText);          

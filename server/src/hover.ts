@@ -10,6 +10,7 @@ import {
     TextDocument,
 } from 'vscode-languageserver-textdocument';
 
+import { showMessage } from './server';
 import * as path from 'path';
 import * as fs from 'fs';
 
@@ -73,6 +74,7 @@ export function returnMMLHover(
 ):Promise<Hover>
 {
     if(mizfiles === undefined){
+        showMessage(1, 'error!');
         return new Promise((resolve, reject) => {
             reject(
                 new Error('You have to set environment variable "MIZFILES"')
@@ -83,12 +85,12 @@ export function returnMMLHover(
     const hoverInformation:Promise<Hover> = new Promise
     ((resolve, reject)=> {
         const hoveredWord = document.getText(wordRange);
-        let [fileName, referenceWord] = hoveredWord.split(':');
+        const [fileName, referenceWord] = hoveredWord.split(':');
         // .absのファイルを参照する
-        fileName = path.join(absDir,fileName.toLowerCase() + '.abs');
-        fs.readFile(fileName, "utf-8", (err, documentText) => {
+        const filePath = path.join(absDir,fileName.toLowerCase() + '.abs');
+        fs.readFile(filePath, "utf-8", (err, documentText) => {
             if (err){
-                reject(err);
+                return reject(err);
             }
             // ホバーによって示されるテキストの開始・終了インデックスを格納する変数
             let startIndex = 0;

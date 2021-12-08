@@ -86,6 +86,15 @@ connection.onInitialized(() => {
     }
 });
 
+export function showMessage(
+    type: number,
+    message: string
+)
+{
+    const param = {type, message};
+    connection.sendRequest('window/showMessageRequest', param);
+}
+
 connection.onHover(
     (params: TextDocumentPositionParams): Hover | Promise<Hover> => {
         const document = documents.get(params.textDocument.uri);
