@@ -12,13 +12,17 @@ import {
     TextDocumentSyncKind,
     InitializeResult,
     Hover,
-    Definition
+    Definition,
+    ExecuteCommandParams,
+    URI
 } from 'vscode-languageserver/node';
 
 import {
     TextDocument
 } from 'vscode-languageserver-textdocument';
-
+import { mizar_verify, mizfiles } from './mizarFunctions';
+import { makeQueryFunction } from './mizarMessages';
+import { setDiagnostics } from './displayErrors';
 import { 
     getWordRange, 
     returnHover,
@@ -29,11 +33,13 @@ import {
     returnDefinition,
 	returnABSDefinition
 } from './goToDefinition';
+import * as path from 'path';
+import * as cp from 'child_process';
 
-
+export const queryMizarMsg = makeQueryFunction();
 // Create a connection for the server, using Node's IPC as a transport.
 // Also include all preview / proposed LSP features.
-const connection = createConnection(ProposedFeatures.all);
+export const connection = createConnection(ProposedFeatures.all);
 
 // Create a simple text document manager.
 const documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
@@ -59,6 +65,21 @@ connection.onInitialize((params: InitializeParams) => {
             // Tell the client that this server supports code completion.
             completionProvider: {
                 resolveProvider: true
+            },
+            executeCommandProvider: {
+                commands: [
+                    MIZAR_COMMANDS.mizar_verify,
+                    //MIZAR_COMMANDS.mizar_verify2,
+                    MIZAR_COMMANDS.mizar_irrths,
+                    MIZAR_COMMANDS.mizar_relinfer,
+                    MIZAR_COMMANDS.mizar_trivdemo,
+                    MIZAR_COMMANDS.mizar_reliters,
+                    MIZAR_COMMANDS.mizar_relprem,
+                    MIZAR_COMMANDS.mizar_irrvoc,
+                    MIZAR_COMMANDS.mizar_inacc,
+                    MIZAR_COMMANDS.mizar_chklab,
+                    MIZAR_COMMANDS.stop_command
+                ]
             },
             hoverProvider: true,
             definitionProvider: true
@@ -94,6 +115,117 @@ export function showMessage(
     const param = {type, message};
     connection.sendRequest('window/showMessageRequest', param);
 }
+
+async function executeCommand(
+    fileName: string,
+    uri: URI,
+    runningCmd: {process: cp.ChildProcess | null},
+    //diagnosticCollection:vscode.DiagnosticCollection, 
+    command:string,
+    //isVerify2:boolean=false
+)
+{
+    //アクティブなエディタがなければエラーを示して終了
+    // if (vscode.window.activeTextEditor === undefined){
+    //     vscode.window.showErrorMessage('Not currently in .miz file!!');
+    //     return;
+    // }
+    //拡張子を確認し、mizarファイルでなければエラーを示して終了
+    if (path.extname(fileName) !== '.miz'){
+        showMessage(1, 'Not currently in .miz file!!');
+        return;
+    }
+    //環境変数MIZFILESが未定義ならエラーメッセージを表示
+    if (mizfiles === undefined){
+        showMessage(1, 'You have to set environment variable "MIZFILES"');
+        return;
+    }
+    //既に実行中のコマンドがある場合
+    if (runningCmd['process']){
+        return;
+    }
+    //channel.clear();
+    //channel.show(true);
+    //コマンド実行前にファイルを保存
+    
+    //await vscode.window.activeTextEditor.document.save();
+    //makeenvとverifierの実行
+    let result = null;
+    const prevCwd = process.cwd();
+    try {
+        //dict,prelを読み込むため、カレントディレクトリを対象ファイルの1つ上へ変更
+        process.chdir(path.join( path.dirname(fileName), '..') );
+        result = await mizar_verify(fileName, command, runningCmd);
+    } finally {
+        process.chdir(prevCwd);
+    }
+        // NOTE:判定ミスは致命的なため「success」と判定された場合でも，
+        //      最も確実に判定できる「.err」ファイルをチェックすべき
+        setDiagnostics(fileName, uri);
+}
+
+
+const MIZAR_COMMANDS = {
+    mizar_verify: "verifier",
+    //mizar_verify2: "verifier",
+    mizar_irrths: "irrths",
+    mizar_relinfer: "relinfer",
+    mizar_trivdemo: "trivdemo",
+    mizar_reliters: "reliters",
+    mizar_relprem: "relprem",
+    mizar_irrvoc: "irrvoc",
+    mizar_inacc: "inacc",
+    mizar_chklab: "chklab",
+    stop_command: "stop-command"
+};
+
+const runningCmd: {process: cp.ChildProcess | null} = {process: null};
+
+connection.onExecuteCommand( async (arg: ExecuteCommandParams) => {
+    if (arg.command === MIZAR_COMMANDS.mizar_verify && arg.arguments) {
+        const fileName = arg.arguments[0].fsPath as string;
+        const uri = arg.arguments[0].external as URI;
+        await executeCommand(fileName, uri, runningCmd, arg.command);
+    }else if (arg.command === MIZAR_COMMANDS.mizar_irrths && arg.arguments) {
+        const fileName = arg.arguments[0].fsPath as string;
+        const uri = arg.arguments[0].external as URI;
+        await executeCommand(fileName, uri, runningCmd, arg.command);
+    }else if (arg.command === MIZAR_COMMANDS.mizar_relinfer && arg.arguments) {
+        const fileName = arg.arguments[0].fsPath as string;
+        const uri = arg.arguments[0].external as URI;
+        await executeCommand(fileName, uri, runningCmd, arg.command);
+    }else if (arg.command === MIZAR_COMMANDS.mizar_trivdemo && arg.arguments) {
+        const fileName = arg.arguments[0].fsPath as string;
+        const uri = arg.arguments[0].external as URI;
+        await executeCommand(fileName, uri, runningCmd, arg.command);
+    }else if (arg.command === MIZAR_COMMANDS.mizar_reliters && arg.arguments) {
+        const fileName = arg.arguments[0].fsPath as string;
+        const uri = arg.arguments[0].external as URI;
+        await executeCommand(fileName, uri, runningCmd, arg.command);
+    }else if (arg.command === MIZAR_COMMANDS.mizar_relprem && arg.arguments) {
+        const fileName = arg.arguments[0].fsPath as string;
+        const uri = arg.arguments[0].external as URI;
+        await executeCommand(fileName, uri, runningCmd, arg.command);
+    }else if (arg.command === MIZAR_COMMANDS.mizar_irrvoc && arg.arguments) {
+        const fileName = arg.arguments[0].fsPath as string;
+        const uri = arg.arguments[0].external as URI;
+        await executeCommand(fileName, uri, runningCmd, arg.command);
+    }else if (arg.command === MIZAR_COMMANDS.mizar_inacc && arg.arguments) {
+        const fileName = arg.arguments[0].fsPath as string;
+        const uri = arg.arguments[0].external as URI;
+        await executeCommand(fileName, uri, runningCmd, arg.command);
+    }else if (arg.command === MIZAR_COMMANDS.mizar_chklab && arg.arguments) {
+        const fileName = arg.arguments[0].fsPath as string;
+        const uri = arg.arguments[0].external as URI;
+        await executeCommand(fileName, uri, runningCmd, arg.command);
+    }else if (arg.command === MIZAR_COMMANDS.stop_command && arg.arguments) {
+        if (runningCmd['process'] === null){
+            return;
+        }
+        runningCmd['process'].kill('SIGINT');
+        showMessage(3, 'Command stopped!');
+    }
+});
 
 connection.onHover(
     (params: TextDocumentPositionParams): Hover | Promise<Hover> => {
