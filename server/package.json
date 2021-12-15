@@ -1,19 +1,24 @@
 {
-    "name": "lsp-sample-server",
-    "description": "Example implementation of a language server in node.",
-    "version": "1.0.0",
-    "author": "Microsoft Corporation",
+    "name": "mizar-language-server",
+    "description": "Language Server Protocol server for Mizar.",
+    "version": "0.0.1",
+    "author": "mimosa-project",
     "license": "MIT",
+    "main": "out/server.js",
     "engines": {
         "node": "*"
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/Microsoft/vscode-extension-samples"
+        "url": "https://github.com/mimosa-project/emlsp"
     },
     "dependencies": {
         "vscode-languageserver": "^7.0.0",
-        "vscode-languageserver-textdocument": "^1.0.1"
+        "vscode-languageserver-textdocument": "^1.0.1",
+        "carrier": "^0.3.0",
+        "child_process": "^1.0.2",
+        "readline": "^1.3.0",
+        "vscode-uri": "^3.0.2"
     },
     "scripts": {}
 }
