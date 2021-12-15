@@ -223,6 +223,7 @@ connection.onExecuteCommand( async (arg: ExecuteCommandParams) => {
             return;
         }
         runningCmd['process'].kill('SIGINT');
+        process.stdout.write("\n\n");
         showMessage(3, 'Command stopped!');
     }
 });
