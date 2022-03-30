@@ -2,8 +2,17 @@ import * as fs from 'fs';
 import { mizfiles } from './mizarFunctions';
 import * as path from 'path';
 
+/**
+ * エラーメッセージをクエリする関数を作成する関数
+ * @return エラーメッセージをクエリする関数
+ */
 export function makeQueryFunction() {
     const errNo2Msg:{ [n: number]: string } = {};
+    /**
+   * エラーメッセージをクエリする関数
+   * @param _errNo エラー番号
+   * @return エラーメッセージ
+   */
     function _queryMizarMsg(_errNo:number) {
         if (!Object.keys(errNo2Msg).length) {
             let key = 0;
