@@ -17,6 +17,12 @@ import * as fs from 'fs';
 const Abstr = "abstr";
 const mizfiles = process.env.MIZFILES;
 
+/**
+ * 同ファイル内のホバーの情報を抽出して返す関数
+ * @param document ホバーしているドキュメント（ファイル）
+ * @param wordRange ホバー対象のワードの範囲
+ * @return 抽出したホバー情報
+ */
 export function returnHover(
     document: TextDocument,
     wordRange: Range
@@ -60,14 +66,19 @@ export function returnHover(
     const contents: MarkupContent = {
         kind: MarkupKind.PlainText,
         value: documentText.slice(startIndex,endIndex)
-    };    
-    
+    };
     return{
         contents,
         range: wordRange
     };
 }
 
+/**
+ * 外部のファイルの定義・定理・スキームのホバー情報を抽出して返す関数
+ * @param document ホバーしているドキュメント
+ * @param wordRange ホバー対象のワードの範囲
+ * @return 抽出したホバー情報
+ */
 export function returnMMLHover(
     document: TextDocument,
     wordRange: Range
@@ -134,6 +145,13 @@ export function returnMMLHover(
     return hoverInformation;
 }
 
+/**
+ * ホバーしている単語がby以降のものであればWordRangeを返す関数
+ * @param document マウスカーソルがホバーしているドキュメント
+ * @param position マウスカーソルの位置
+ * @param regex 正規表現
+ * @return WordRange
+ */
 export function getWordRange(
     document: TextDocument,
     position: Position,
@@ -153,7 +171,6 @@ export function getWordRange(
         const index = afterBy.index;
         // const regex = /\w+:def\s+\d+|\w+:\s*\d+|\w+:sch\s+\d+|\w+/g;
         let match;
-        // REVIEW: whileで良いのか
         // 正規表現で一単語ずつ取得しマウスのポジションにある単語のwordRangeを返す
         do {
             match = regex.exec(afterBy[0]);
