@@ -49,7 +49,6 @@ connection.onInitialize(() => {
             executeCommandProvider: {
                 commands: [
                     MIZAR_COMMANDS.mizar_verify,
-                    //MIZAR_COMMANDS.mizar_verify2,
                     MIZAR_COMMANDS.mizar_irrths,
                     MIZAR_COMMANDS.mizar_relinfer,
                     MIZAR_COMMANDS.mizar_trivdemo,
@@ -81,9 +80,7 @@ async function executeCommand(
     fileName: string,
     uri: URI,
     runningCmd: {process: cp.ChildProcess | null},
-    //diagnosticCollection:vscode.DiagnosticCollection, 
     command:string,
-    //isVerify2:boolean=false
 )
 {
     //アクティブなエディタがなければエラーを示して終了
@@ -108,7 +105,6 @@ async function executeCommand(
     //channel.clear();
     //channel.show(true);
     //コマンド実行前にファイルを保存
-    
     //await vscode.window.activeTextEditor.document.save();
     //makeenvとverifierの実行
     let result = null;
@@ -120,15 +116,14 @@ async function executeCommand(
     } finally {
         process.chdir(prevCwd);
     }
-        // NOTE:判定ミスは致命的なため「success」と判定された場合でも，
-        //      最も確実に判定できる「.err」ファイルをチェックすべき
-        setDiagnostics(fileName, uri);
+    // NOTE:判定ミスは致命的なため「success」と判定された場合でも，
+    //      最も確実に判定できる「.err」ファイルをチェックすべき
+    setDiagnostics(fileName, uri);
 }
 
 
 const MIZAR_COMMANDS = {
     mizar_verify: "verifier",
-    //mizar_verify2: "verifier",
     mizar_irrths: "irrths",
     mizar_relinfer: "relinfer",
     mizar_trivdemo: "trivdemo",
@@ -143,49 +138,17 @@ const MIZAR_COMMANDS = {
 const runningCmd: {process: cp.ChildProcess | null} = {process: null};
 
 connection.onExecuteCommand( async (arg: ExecuteCommandParams) => {
-    if (arg.command === MIZAR_COMMANDS.mizar_verify && arg.arguments) {
-        const fileName = arg.arguments[0].fsPath as string;
-        const uri = arg.arguments[0].external as URI;
-        await executeCommand(fileName, uri, runningCmd, arg.command);
-    }else if (arg.command === MIZAR_COMMANDS.mizar_irrths && arg.arguments) {
-        const fileName = arg.arguments[0].fsPath as string;
-        const uri = arg.arguments[0].external as URI;
-        await executeCommand(fileName, uri, runningCmd, arg.command);
-    }else if (arg.command === MIZAR_COMMANDS.mizar_relinfer && arg.arguments) {
-        const fileName = arg.arguments[0].fsPath as string;
-        const uri = arg.arguments[0].external as URI;
-        await executeCommand(fileName, uri, runningCmd, arg.command);
-    }else if (arg.command === MIZAR_COMMANDS.mizar_trivdemo && arg.arguments) {
-        const fileName = arg.arguments[0].fsPath as string;
-        const uri = arg.arguments[0].external as URI;
-        await executeCommand(fileName, uri, runningCmd, arg.command);
-    }else if (arg.command === MIZAR_COMMANDS.mizar_reliters && arg.arguments) {
-        const fileName = arg.arguments[0].fsPath as string;
-        const uri = arg.arguments[0].external as URI;
-        await executeCommand(fileName, uri, runningCmd, arg.command);
-    }else if (arg.command === MIZAR_COMMANDS.mizar_relprem && arg.arguments) {
-        const fileName = arg.arguments[0].fsPath as string;
-        const uri = arg.arguments[0].external as URI;
-        await executeCommand(fileName, uri, runningCmd, arg.command);
-    }else if (arg.command === MIZAR_COMMANDS.mizar_irrvoc && arg.arguments) {
-        const fileName = arg.arguments[0].fsPath as string;
-        const uri = arg.arguments[0].external as URI;
-        await executeCommand(fileName, uri, runningCmd, arg.command);
-    }else if (arg.command === MIZAR_COMMANDS.mizar_inacc && arg.arguments) {
-        const fileName = arg.arguments[0].fsPath as string;
-        const uri = arg.arguments[0].external as URI;
-        await executeCommand(fileName, uri, runningCmd, arg.command);
-    }else if (arg.command === MIZAR_COMMANDS.mizar_chklab && arg.arguments) {
-        const fileName = arg.arguments[0].fsPath as string;
-        const uri = arg.arguments[0].external as URI;
-        await executeCommand(fileName, uri, runningCmd, arg.command);
-    }else if (arg.command === MIZAR_COMMANDS.stop_command && arg.arguments) {
+    if (arg.command === MIZAR_COMMANDS.stop_command && arg.arguments) {
         if (runningCmd['process'] === null){
             return;
         }
         runningCmd['process'].kill('SIGINT');
         process.stdout.write("\n\n");
         showMessage(3, 'Command stopped!');
+    }else if (arg.arguments) {
+        const fileName = arg.arguments[0].fsPath as string;
+        const uri = arg.arguments[0].external as URI;
+        await executeCommand(fileName, uri, runningCmd, arg.command);
     }
 });
 
