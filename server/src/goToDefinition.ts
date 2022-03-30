@@ -74,6 +74,7 @@ export function returnABSDefinition(
         fileName = path.join(absDir,fileName.toLowerCase() + '.abs');
         // 定義を参照するドキュメントから，定義箇所を指定して返す
         fs.readFile(fileName, "utf-8", (err, documentText) => {
+            // ドキュメントが開けなかった場合，その旨を表示
             if (err){
                 showMessage(1, 'not found ' + fileName);
                 return reject(err);
