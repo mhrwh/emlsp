@@ -33,7 +33,6 @@ export const mizfiles = process.env.MIZFILES;
  * @param numberOfErrors エラー数，プログレス横に出力される
  */
 function addMissingHashTags(
-    //channel:vscode.OutputChannel, 
     numberOfProgress:number, 
     numberOfErrors:number)
 {
@@ -41,6 +40,7 @@ function addMissingHashTags(
         return;
     }
     const appendChunk = "#".repeat(MAX_OUTPUT-numberOfProgress);
+    // channel.appendをprocess.stdout.writeで代用
     process.stdout.write(appendChunk);
     // エラーがあれば、その数を出力
     if (numberOfErrors){
@@ -59,7 +59,6 @@ function addMissingHashTags(
  * @return コマンドの実行結果を,"success","makeenv error", "command error"で返す
  */
 export async function mizar_verify(
-    //channel:vscode.OutputChannel, 
     fileName:string, 
     command="verifier",
     runningCmd: {process: cp.ChildProcess | null}
@@ -122,7 +121,6 @@ export async function mizar_verify(
                 if (line.indexOf('*') !== -1){
                     isCommandSuccess = false;
                 }
-                // REVIEW:正規表現が正しいか確認
                 // Parser   [3482 *2] などを正規表現として抜き出し，
                 // 「Parser」や「3482」「2」にあたる部分をグループ化している
                 const cmdOutput = line.match(/^(\w+) +\[ *(\d+) *\**(\d*)\].*$/);
