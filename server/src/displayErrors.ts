@@ -2,7 +2,6 @@ import {
     Position,
 	Range,
 	Diagnostic,
-	
     URI
 } from 'vscode-languageserver/node';
 import * as fs from "fs";
@@ -30,7 +29,6 @@ export function setDiagnostics(
     const stream = fs.createReadStream(errFile, "utf-8");
     const reader = readline.createInterface({ input:stream });
     const diagnostics: Diagnostic[] = [];
-
     //.errファイルの例：
     // 左から順に「エラーの行」「左からの文字数」「エラーの種類」を表す番号となっている
     //test.err : 36 1 201
