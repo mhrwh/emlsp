@@ -1,7 +1,6 @@
 import {
     Hover,
-    MarkupContent,
-    MarkupKind,
+    MarkedString,
     Position
 } from 'vscode-languageserver/node';
 
@@ -63,10 +62,9 @@ export function returnHover(
     else{
         return{ contents: [] };
     }
-    const contents: MarkupContent = {
-        kind: MarkupKind.PlainText,
-        value: documentText.slice(startIndex,endIndex)
-    };
+    const contents: MarkedString[] =  [
+        { language: 'Mizar', value: documentText.slice(startIndex,endIndex) }
+    ];
     return{
         contents,
         range: wordRange
@@ -135,10 +133,9 @@ export function returnMMLHover(
                 endIndex = wordIndex + documentText.slice(wordIndex).search(/;/)
                             + ';'.length;
             }
-            const contents: MarkupContent = {
-                kind: MarkupKind.PlainText,
-                value: documentText.slice(startIndex,endIndex)
-            };
+            const contents: MarkedString[] =  [
+                { language: 'Mizar', value: documentText.slice(startIndex,endIndex) }
+            ];
             resolve({contents, range: wordRange});
         });
     });
