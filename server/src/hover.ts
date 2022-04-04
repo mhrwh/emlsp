@@ -161,7 +161,7 @@ export function getWordRange(
     // ホバーしている一行のテキスト
     const text = document.getText({
         "start": { "line": position.line, "character": 0 },
-        "end": { "line": position.line, "character": 100 }
+        "end": { "line": position.line + 1, "character": 0 }
     });
     // by以降を正規表現で取得
     const afterBy = /(by\s+(\w+(,|\s|:)*)+|from\s+\w+(:sch\s+\d+)*\((\w+,*)+\))/g.exec(text);
