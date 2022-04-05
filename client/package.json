@@ -1,0 +1,22 @@
+{
+    "name": "mizar-lsp-client",
+    "description": "VSCode part of a mizar language server",
+    "author": "mimosa-project",
+    "license": "MIT",
+    "version": "0.0.1",
+    "publisher": "mimosa-project",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/mimosa-project/emlsp"
+    },
+    "engines": {
+        "vscode": "^1.52.0"
+    },
+    "dependencies": {
+        "vscode-languageclient": "^7.0.0"
+    },
+    "devDependencies": {
+        "@types/vscode": "^1.52.0",
+        "@vscode/test-electron": "^1.6.1"
+    }
+}
