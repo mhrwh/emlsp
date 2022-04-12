@@ -82,6 +82,17 @@
                     ".miz"
                 ],
                 "configuration": "./language-configuration.json"
+            },
+            {
+                "id": "Mizar-abstract",
+                "aliases": [
+                    "Mizar-abstract",
+                    "Mizar-abstract"
+                ],
+                "extensions": [
+                    ".abs"
+                ],
+                "configuration": "./language-configuration.json"
             }
         ],
         "menus": {
@@ -142,6 +153,11 @@
                 "language": "Mizar",
                 "scopeName": "source.miz",
                 "path": "./syntaxes/Mizar.tmLanguage.json"
+            },
+            {
+                "language": "Mizar-abstract",
+                "scopeName": "source.abs",
+                "path": "./syntaxes/Mizar-abstract.tmLanguage.json"
             }
         ],
         "configuration": {
